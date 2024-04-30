@@ -1,9 +1,7 @@
 package server
 
 import (
-	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"nekoauth/lib/database"
 	"net/http"
 	"net/url"
@@ -17,17 +15,8 @@ func Run() {
 	mux := http.NewServeMux()
 
 	redirectUri := "/oauth_callback/"
-	state := "test_state"
 
 	// these are temporary: will be made from another server
-	redirectQuery := url.Values{}
-	redirectQuery.Set("response_type", "code")
-	redirectQuery.Set("scope", "foo")                // client requests particular items like "scope"
-	redirectQuery.Set("client_id", "oauth_client_1") // client identifies itself
-	redirectQuery.Set("redirect_uri", redirectUri)
-	redirectQuery.Set("state", state)
-
-	mux.Handle("GET /start", http.RedirectHandler("/authorize/?"+redirectQuery.Encode(), http.StatusMovedPermanently))
 
 	mux.HandleFunc("GET /authorize/", func(w http.ResponseWriter, r *http.Request) {
 		// step 1: parse the query params
@@ -56,47 +45,6 @@ func Run() {
 	})
 
 	mux.HandleFunc("GET "+redirectUri, func(w http.ResponseWriter, r *http.Request) {
-		// step 5: parse the query - state, code
-
-		// step 5 - 1: compare the state with the one we send to the redirection page at the beginning
-		code := "test_code" // the parsed one from the redirected URI
-
-		// step 5 - 2: asks the authorization server for the token
-		httpClient := http.Client{}
-
-		header := http.Header{}
-		header.Set("Accept", "application/json")
-		header.Set("Content-type", "application/x-www-form-encoded")
-
-		// base64 encode the following string:
-		// <client_id>:<client_secret>
-
-		clientCredential := base64.StdEncoding.EncodeToString([]byte("client_id:client_secret"))
-		header.Set("Authorization", "Basic "+clientCredential)
-
-		body := url.Values{}
-		// the means by which a client is given access to a protected resource using the oauth protocol
-		body.Set("grant_type", "authorization_code")
-		body.Set("redirect_uri", redirectUri)
-		body.Set("code", code)
-
-		url, _ := url.Parse("/authorize/token")
-
-		clientRequest := http.Request{
-			Method:   http.MethodPost,
-			URL:      url,
-			Header:   header,
-			Host:     "/", // client hosts
-			PostForm: body,
-		}
-
-		resp, err := httpClient.Do(&clientRequest)
-
-		if err != nil {
-			fmt.Println("err!")
-		}
-
-		fmt.Println(resp)
 
 	})
 
