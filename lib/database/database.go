@@ -12,6 +12,8 @@ func DB() (*sql.DB, error) {
 }
 
 // bootstrap - this is only for the testing purpose
+// in principle, the two tables - clients, states - needs to be in separate DBs
+// but for convenience, we will make them in the same database
 func BootstrapDB() error {
 	db, err := DB()
 
@@ -22,6 +24,13 @@ func BootstrapDB() error {
 	if _, err := db.Exec(`CREATE TABLE IF NOT EXISTS clients (
 		id TEXT(64) PRIMARY KEY,
 		secret_hashed TEXT(255) NOT NULL
+	);`); err != nil {
+		return err
+	}
+
+	if _, err := db.Exec(`CREATE TABLE IF NOT EXISTS states (
+		id TEXT(64) PRIMARY KEY,
+		state TEXT(255) NOT NULL
 	);`); err != nil {
 		return err
 	}

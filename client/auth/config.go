@@ -6,11 +6,12 @@ import (
 )
 
 type Config struct {
-	clientId              string
-	clientSecret          string
-	redirectUri           string
-	authorizationEndpoint string
-	tokenEndpoint         string
+	ClientId              string
+	ClientSecret          string
+	RedirectUri           string
+	AuthorizationEndpoint string
+	TokenEndpoint         string
+	LoginPageEndpoint     string
 }
 
 func GetConfig() (*Config, error) {
@@ -22,7 +23,7 @@ func GetConfig() (*Config, error) {
 		return nil, errors.New("CLIENT_ID for auth has not been provided")
 	}
 
-	config.clientId = clientId
+	config.ClientId = clientId
 
 	clientSecret := os.Getenv("CLIENT_SECRET")
 
@@ -30,7 +31,7 @@ func GetConfig() (*Config, error) {
 		return nil, errors.New("CLIENT_SECRET for auth has not been provided")
 	}
 
-	config.clientSecret = clientSecret
+	config.ClientSecret = clientSecret
 
 	redirectUri := os.Getenv("REDIRECT_URI")
 
@@ -38,7 +39,7 @@ func GetConfig() (*Config, error) {
 		return nil, errors.New("REDIRECT_URI for auth has not been provided")
 	}
 
-	config.redirectUri = redirectUri
+	config.RedirectUri = redirectUri
 
 	authorizationEndpoint := os.Getenv("AUTHORIZATION_ENDPOINT")
 
@@ -46,7 +47,7 @@ func GetConfig() (*Config, error) {
 		return nil, errors.New("AUTHORIZATION_ENDPOINT has not been provided")
 	}
 
-	config.authorizationEndpoint = authorizationEndpoint
+	config.AuthorizationEndpoint = authorizationEndpoint
 
 	tokenEndpoint := os.Getenv("TOKEN_ENDPOINT")
 
@@ -54,7 +55,15 @@ func GetConfig() (*Config, error) {
 		return nil, errors.New("TOKEN_ENDPOINT for auth has not been provided")
 	}
 
-	config.tokenEndpoint = tokenEndpoint
+	config.TokenEndpoint = tokenEndpoint
+
+	loginPageEndpoint := os.Getenv("LOGIN_PAGE_ENDPOINT")
+
+	if loginPageEndpoint == "" {
+		return nil, errors.New("TOKEN_ENDPOINT for auth has not been provided")
+	}
+
+	config.LoginPageEndpoint = loginPageEndpoint
 
 	return config, nil
 }
